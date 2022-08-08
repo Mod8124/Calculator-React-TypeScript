@@ -1,26 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { FC } from 'react';
+import { Display } from './components/Display/Display';
+import { Header } from './components/Header/Header';
+import { AppLogic } from './AppLogic';
+import { Form } from './components/Form/Form';
+import { AppContext } from './Hooks/AppContext';
+import { AppStyle, ContainerStyle } from './style/app.style';
+import { appAnimation } from './style/app.animation';
 
-function App() {
+const App:FC = () =>  {
+
+  const { handleDisplay, display, theme, setTheme } = AppLogic();
+  const { animationBackground, animationContainer, animationInitial} = appAnimation(theme);
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    
+    <AppStyle animate={animationBackground} theme={theme}>
+      
+      <ContainerStyle animate={animationContainer} initial={animationInitial}>
+        <AppContext.Provider value={{theme}}>
+          <Header setTheme={setTheme}/>
+          <Display display={display}/>
+          <Form theme={theme} handleDisplay={handleDisplay}/>
+        </AppContext.Provider>
+      </ContainerStyle>
+
+    </AppStyle>
+
   );
-}
+};
 
 export default App;
