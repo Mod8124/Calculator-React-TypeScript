@@ -5,7 +5,7 @@
 - [Screen](#screen)
 - [Features](#features)
 - [Scripts](#scripts)
-- [Build width](#build-width)
+- [Build width](#build-with)
 - [Useful resources](#useful-resources)
 - [Continued development](#continued-development)
 

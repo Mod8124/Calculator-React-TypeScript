@@ -23,6 +23,10 @@ export const HeaderStyle__switch = styled.article`
   grid-template-columns:60% auto;
   padding-top:8px;
 
+ @media screen and (max-width:500px) {
+   grid-template-columns:40% auto;
+ }
+
 `;
 
 export const HeaderStyle__subTitle = styled.div`
