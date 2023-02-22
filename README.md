@@ -1,13 +1,14 @@
 # Calculator app
 
 ## Table of contents
-- [Overview](#overview)
-- [Screen](#screen)
-- [Features](#features)
-- [Scripts](#scripts)
-- [Build width](#build-with)
-- [Useful resources](#useful-resources)
-- [Continued development](#continued-development)
+- [Calculator app](#calculator-app)
+  - [Table of contents](#table-of-contents)
+  - [Overview](#overview)
+  - [screen](#screen)
+  - [Features](#features)
+  - [Scripts](#scripts)
+  - [Build with](#build-with)
+  - [Useful Resources](#useful-resources)
 
 ## Overview
 The app is a classical calculator with theme switch
@@ -73,12 +74,18 @@ use things like `useCallback` || `useMemo` but I want to make it simple so I jus
 
 So the application logic is to update the object calculator, this depends on what that user clicks first, and if number, operation, and number2 have a value, and the user call =  do an operation depending on what value has the operation and update the display 
 ```tsx
+ interface Icalcu {
+    prev:string,
+    next:string,
+    operation:string,
+    display:string
+ }
+
 const [calculator, setCalculator] = useState<Icalcu>({
     display:'',
     number:'',
     number2:'',
-    operation:null,
-    special:false
+    operation:'',
   });
 
 ```
@@ -109,103 +116,6 @@ So every time the user click a button call and depends what the user click call 
 
   };
 ```
-`The handleNumber` comes when the user click an input with data-set number so in simple way just update a object calculator if operation === null, update `calculator.number` else `calculator.number2`
-```tsx
-  const handleNumber = (number:string):void => {
-
-    if (calculator.number2 === '' && calculator.operation === null) {
-      setCalculator((prev:Icalcu)=> ({
-        ...prev,
-        number:prev.number += number,
-        display:prev.display += number
-      }));
-    }
-
-    if (calculator.operation) {
-      setCalculator((prev)=> ({
-        ...prev,
-        number2:prev.number2 += number,
-        display:prev.display += number
-      }));
-    }
-
-  };
-```
-
-`The handleOperation` when the user click a input with data-operation update a calculator.operation if the operation is different to null call calculate otherwise just update the object, also do different conditions if the data-set is equal to `del`
-
-```tsx
-      const handleOperation = (operation:string):void => {
-
-    if ( operation === 'Backspace' && calculator.number2 !== '' && calculator.operation ) {
-      setCalculator((prev)=> ({
-        ...prev,
-        number2:prev.number2.slice(0, -1),
-        display:prev.display.slice(0, -1)
-      }));
-      return;
-    }
-
-    if ( operation === 'Backspace' && calculator.operation && calculator.number2 === '') {
-      setCalculator((prev)=> ({
-        ...prev,
-        operation:null,
-        display: prev.display.slice(0, -1)
-      }));
-      return;
-    }
-
-    if ( operation === 'Backspace' && calculator.number !== '' && calculator.operation === null ) {
-      setCalculator((prev)=> ({
-        ...prev,
-        number:prev.number.slice(0, -1),
-        display:prev.display.slice(0, -1)
-      }));
-      return;
-    }
-
-    if ( operation !== 'Backspace' && calculator.number2 !== '') {
-      setCalculator((prev)=> ({
-        ...prev,
-        special:true
-      }));
-      calculate(calculator);
-      return;
-    }
-
-    if (calculator.operation === null && calculator.number !== '') {
-      setCalculator((prev)=> ({
-        ...prev,
-        operation: operation,
-        display: prev.display += operation
-      }));
-    }
-
-  };
-```
-
-
-`handle calculate` is the function of the update calculator.display, depends on what operation is, also if it's special
-
-```tsx
-  const handleAction = (action:string):void => {
-
-    switch (action)  {
-    case 'reset':
-      setCalculator(()=>({
-        ...DEFAULT
-      }));
-      break;
-    case '=':
-      calculate(calculator);
-      break;
-    }
-
-  };
-```
-
-`handle calculate` is the function the update calculator.display, depends on what operation is, also if it's special
-
 [Frontend Mentor](https://www.frontendmentor.io) challenges help you improve your coding skills by building realistic projects.
 
 **Have fun building!** 🚀
