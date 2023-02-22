@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 export const AppLogic = () => {
-  const [display, setDisplay] = useState<string>('0');
   const [theme, setTheme] = useState<string>('theme1');
 
   useEffect(()=> {
@@ -18,13 +17,8 @@ export const AppLogic = () => {
     }
   },[]);
   
-  const handleDisplay = (value:string):void => {
-    setDisplay(value);
-  };
 
   return {
-    display,
-    handleDisplay,
     theme,
     setTheme
   };

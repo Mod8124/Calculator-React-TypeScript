@@ -1,6 +1,13 @@
+import { MouseEvent } from 'react';
+
 export interface Idisplay  {
     display:string,
     className?:string
+}
+
+export interface IForm {
+    theme:string,
+    handleInput:(e: MouseEvent<HTMLButtonElement>) => void
 }
 
 export interface Iheader {
@@ -27,9 +34,14 @@ export interface IdisplayInterface {
 }
 
 export interface Icalcu {
-    display:string,
-    number:string,
-    number2:string,
-    operation:null|string,
-    special:boolean
+    prev:string,
+    next:string,
+    operation:string,
+    display:string
 }
+
+export const enum EHandleNumber {
+    prev = 'prev',
+    next = 'next',
+}
+

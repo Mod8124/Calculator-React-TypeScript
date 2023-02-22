@@ -6,11 +6,13 @@ import { Form } from './components/Form/Form';
 import { AppContext } from './Hooks/AppContext';
 import { AppStyle, ContainerStyle } from './style/app.style';
 import { appAnimation } from './style/app.animation';
+import { FormLogic } from './components/Form/Logic/FormLogic';
 
 const App:FC = () =>  {
 
-  const { handleDisplay, display, theme, setTheme } = AppLogic();
+  const { theme, setTheme } = AppLogic();
   const { animationBackground, animationContainer, animationInitial} = appAnimation(theme);
+  const { handleInput, calculator } = FormLogic();
 
 
   return (
@@ -20,8 +22,8 @@ const App:FC = () =>  {
       <ContainerStyle animate={animationContainer} initial={animationInitial}>
         <AppContext.Provider value={{theme}}>
           <Header setTheme={setTheme}/>
-          <Display display={display}/>
-          <Form theme={theme} handleDisplay={handleDisplay}/>
+          <Display display={calculator.display}/>
+          <Form theme={theme} handleInput={handleInput}/>
         </AppContext.Provider>
       </ContainerStyle>
 

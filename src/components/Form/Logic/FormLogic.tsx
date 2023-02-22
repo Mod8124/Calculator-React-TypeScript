@@ -1,108 +1,81 @@
-import { MouseEvent, useEffect, useState,} from 'react';
-import { IdisplayInterface, Icalcu } from '../../../interfaces/Interfaces';
+import { MouseEvent, useState } from 'react';
+import { Icalcu, EHandleNumber } from '../../../interfaces/Interfaces';
 import { Default } from '../../../helpers/default';
 
-export const FormLogic = ({handleDisplay}:IdisplayInterface) => {
+export const FormLogic = () => {
 
   const { DEFAULT } = Default();
 
   const [calculator, setCalculator] = useState<Icalcu>({
-    display:'',
-    number:'',
-    number2:'',
-    operation:null,
-    special:false
+    prev: '0',
+    next: '',
+    operation: '',
+    display: '',
   });
 
-  useEffect(()=> {
-    handleDisplay(calculator.display);
-  },[calculator.display]);
+  const handleNumber = (current:EHandleNumber, value:string) => {
+    return calculator[`${current}`] === '0' && value !== '0'
+      ? value
+      : (!calculator.operation && current === 'prev') ||
+          (calculator.operation && current === 'next')
+        ? (calculator[`${current}`] += value)
+        : calculator[`${current}`];
+  };
 
-  //handle number that come when user click  input with data-set number so in simple way just update a object calculator
+  const addNumber = (value:string):void => {
 
-  const handleNumber = (number:string):void => {
-
-    if (calculator.number2 === '' && calculator.operation === null) {
-      setCalculator((prev:Icalcu)=> ({
-        ...prev,
-        number:prev.number += number,
-        display:prev.display += number
-      }));
-    }
-
-    if (calculator.operation) {
-      setCalculator((prev)=> ({
-        ...prev,
-        number2:prev.number2 += number,
-        display:prev.display += number
-      }));
-    }
+    setCalculator({
+      ...calculator,
+      display: (calculator.display += value),
+      prev: handleNumber(EHandleNumber.prev, value),
+      next: handleNumber(EHandleNumber.next, value),
+    });
 
   };
 
   // `The handleOperation` when the user clicks an input with data-operation update a calculator.operation if the operation is different to null call calculate otherwise just update the object
 
-  const handleOperation = (operation:string):void => {
+  const backspace = () => {
+    setCalculator((calc) => ({
+      ...calc,
+      next: calc.operation ? calc.next.slice(0, -1) : calc.next,
+      prev: !calc.operation ? calc.prev.slice(0, -1) : calc.prev,
+      display: calc.display.slice(0, -1),
+    }));
+  };
 
-    if ( operation === 'Backspace' && calculator.number2 !== '' && calculator.operation ) {
-      setCalculator((prev)=> ({
-        ...prev,
-        number2:prev.number2.slice(0, -1),
-        display:prev.display.slice(0, -1)
-      }));
+  const addOperation = (value:string) => {
+
+    if (value === 'Backspace') {
+      backspace();
       return;
     }
 
-    if ( operation === 'Backspace' && calculator.operation && calculator.number2 === '') {
-      setCalculator((prev)=> ({
-        ...prev,
-        operation:null,
-        display: prev.display.slice(0, -1)
-      }));
-      return;
-    }
+    if (calculator.operation) calculate();
 
-    if ( operation === 'Backspace' && calculator.number !== '' && calculator.operation === null ) {
-      setCalculator((prev)=> ({
-        ...prev,
-        number:prev.number.slice(0, -1),
-        display:prev.display.slice(0, -1)
-      }));
-      return;
-    }
-
-    if ( operation !== 'Backspace' && calculator.number2 !== '') {
-      setCalculator((prev)=> ({
-        ...prev,
-        special:true
-      }));
-      calculate(calculator);
-      return;
-    }
-
-    if (calculator.operation === null && calculator.number !== '') {
-      setCalculator((prev)=> ({
-        ...prev,
-        operation: operation,
-        display: prev.display += operation
-      }));
-    }
-
+    setCalculator((calc) => ({
+      ...calc,
+      display: calc.display + value,
+      operation: value,
+    }));
   };
 
   //handle action when the user click a input with data-action 
   // could be two options reset that reset the object calculator, the second options is calcultate that call calculate
+  const resetCalculator = () => {
+    setCalculator(()=>({
+      ...DEFAULT
+    }));
+  };
 
   const handleAction = (action:string):void => {
 
     switch (action)  {
     case 'reset':
-      setCalculator(()=>({
-        ...DEFAULT
-      }));
+      resetCalculator();
       break;
     case '=':
-      calculate(calculator);
+      calculate();
       break;
     }
 
@@ -110,113 +83,31 @@ export const FormLogic = ({handleDisplay}:IdisplayInterface) => {
 
   // calculte is a function that calculate the operation depends what operation is also is require special
   // that if is special operation doesn't reset the object calculator if no reset everything except that number is the result and display is also the resutl
+  const math = (a:number, b:number, operation:string) => {
+    return operation === '+'
+      ? a + b
+      : operation === '-'
+        ? a - b
+        : operation === 'x'
+          ? a * b
+          : a / b;
+  };
 
-  const calculate = ({ number, number2, operation, special }:Icalcu) => {
+  const calculate = () => {
+    if (calculator.operation && calculator.next !== '') {
+      const result = math(
+        Number(calculator.prev),
+        Number(calculator.next),
+        calculator.operation,
+      ).toString();
 
-    if (number === '' && number2 === '') {
-      setCalculator((prev)=> ({
-        ...prev,
-        display:'0'
-      }));
-      return;
-    }
-
-    const numberInt = parseFloat(number);
-    const number2Int = parseFloat(number2);
-
-    const sum = operation === '+' ? (numberInt + number2Int).toString() : '' ;
-    const rest = operation === '-' ? (numberInt - number2Int).toString() : '';
-    const multiplication = operation === '*' ? (numberInt * number2Int).toString() : '';
-    const divide = operation === '/' ? (numberInt / number2Int).toString() : '';
-    
-    if (special) {
-
-      switch (operation) {
-      case '+': {
-        setCalculator((prev)=> ({
-          ...prev,
-          number:sum,
-          number2:'',
-          special:false,
-          display:sum + prev.operation
-        }));
-      }
-        break;
-      case '-': {
-        setCalculator((prev)=> ({
-          ...prev,
-          number:rest,
-          number2:'',
-          special:false,
-          display:rest + prev.operation
-        }));
-      }
-        break;
-      case '*': {
-        setCalculator((prev)=> ({
-          ...prev,
-          number:multiplication,
-          number2:'',
-          special:false,
-          display:multiplication + prev.operation
-        }));
-      }
-        break;
-      case '/': {
-        setCalculator((prev)=> ({
-          ...prev,
-          number:divide,
-          number2:'',
-          special:false,
-          display:divide
-        }));
-      }
-        break;
-      }
-
-    } else {
-      switch (operation) {
-      case '+': {
-        setCalculator((prev)=> ({
-          ...prev,
-          number:sum,
-          operation : null,
-          number2:'',
-          display:sum
-        }));
-      }
-        break;
-      case '-': {
-        setCalculator((prev)=> ({
-          ...prev,
-          number:rest,
-          operation:null,
-          number2:'',
-          display:rest
-        }));
-      }
-        break;
-      case '*': {
-        setCalculator((prev)=> ({
-          ...prev,
-          number:multiplication,
-          operation:null,
-          number2:'',
-          display:multiplication
-        }));
-      }
-        break;
-      case '/': {
-        setCalculator((prev)=> ({
-          ...prev,
-          number:divide,
-          number2:'',
-          operation:null,
-          display:(numberInt / number2Int).toString()
-        }));
-      }
-        break;
-      }
+      setCalculator({
+        ...calculator,
+        prev: result === 'NaN' ? '0' : result,
+        next: '',
+        operation: '',
+        display: result === 'NaN' ? 'Error' : result,
+      });
     }
   };
 
@@ -227,12 +118,12 @@ export const FormLogic = ({handleDisplay}:IdisplayInterface) => {
     const {number , operation, action} = button.dataset;
     
     if (number) {
-      handleNumber(number);
+      addNumber(number);
       return;
     }
 
     if (operation) {
-      handleOperation(operation);
+      addOperation(operation);
       return;
     }
 

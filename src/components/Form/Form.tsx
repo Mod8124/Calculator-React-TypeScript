@@ -1,11 +1,8 @@
-import { FormLogic } from './Logic/FormLogic';
-import { IdisplayInterface } from '../../interfaces/Interfaces';
+import { IForm } from '../../interfaces/Interfaces';
 import { ContainerStyle, BtnStyle } from './Form.style';
 
-export const Form = ( { handleDisplay, theme } : IdisplayInterface ) => {
+export const Form = ( {  handleInput, theme } : IForm) => {
     
-  const { handleInput } = FormLogic({handleDisplay});
-
   return (
     <ContainerStyle theme={theme}>
 
